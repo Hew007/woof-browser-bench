@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Woof 浏览器实测</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #0d0f14; --panel: #161a22; --line: #262c38; --text: #e8ebf1; --muted: #8a93a6;
+    --accent: #ffb547; --good: #4ade80; --blue: #60a5fa;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }
+  main { max-width: 560px; margin: 0 auto; padding: 20px 16px 40px; }
+  h1 { font-size: 28px; margin: 4px 0 2px; letter-spacing: .5px; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+  .pill { display: inline-block; padding: 2px 9px; border: 1px solid var(--line); border-radius: 99px;
+    font-size: 12px; color: var(--muted); margin: 0 4px 4px 0; }
+  .pill.on { color: var(--good); border-color: #1f5135; }
+  .pill.off { color: #f87171; border-color: #5b2222; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-top: 12px; }
+  .card h2 { font-size: 13px; color: var(--muted); font-weight: 500; margin: 0 0 10px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .grid.two { grid-template-columns: repeat(2, 1fr); }
+  .stat .v { font: 600 24px/1.1 ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  .stat .v small { font-size: 13px; color: var(--muted); font-weight: 400; margin-left: 2px; }
+  .stat .k { font-size: 12px; color: var(--muted); }
+  .big .v { font-size: 38px; color: var(--accent); }
+  .bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin-top: 10px; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+  #stage { font-size: 13px; color: var(--muted); margin-top: 8px; min-height: 20px; }
+  textarea { width: 100%; min-height: 78px; resize: vertical; background: #0f1218; color: var(--text);
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px; font: inherit; }
+  .row { display: flex; gap: 8px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
+  button { background: var(--accent); color: #1a1205; border: 0; border-radius: 8px; padding: 10px 18px;
+    font: 600 15px inherit; cursor: pointer; }
+  button:disabled { opacity: .4; cursor: default; }
+  button.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); font-weight: 400; }
+  select { background: #0f1218; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 9px; font: inherit; }
+  canvas { width: 100%; height: 70px; display: block; margin-top: 10px; }
+  .pieces { margin-top: 8px; font-size: 13px; }
+  .pieces div { padding: 4px 0; border-top: 1px dashed var(--line); color: var(--muted); display: flex; gap: 8px; }
+  .pieces div.done { color: var(--text); }
+  .pieces b { font-family: ui-monospace, Consolas, monospace; font-weight: 500; color: var(--blue); white-space: nowrap; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  td, th { text-align: right; padding: 4px 2px; border-top: 1px solid var(--line); font-family: ui-monospace, Consolas, monospace; }
+  th { color: var(--muted); font-weight: 400; font-family: inherit; }
+  td:first-child, th:first-child { text-align: left; }
+  .note { font-size: 11px; color: var(--muted); margin-top: 14px; }
+  .err { color: #f87171; }
+</style>
+</head>
+<body>
+<main>
+  <h1>前端也能跑<em>语音 AI</em></h1>
+  <div class="sub">Underdog Woof 文本转语音 · 普通网页 · 不调任何云端 API</div>
+  <div>
+    <span class="pill" id="pNet">网络：在线</span>
+    <span class="pill" id="pReq">推理期网络请求：—</span>
+    <span class="pill" id="pCpu">CPU 线程：1（WASM）</span>
+  </div>
+
+  <div class="card">
+    <h2>① 冷启动（只发生一次）</h2>
+    <div class="grid">
+      <div class="stat"><div class="v" id="sBoot">—</div><div class="k">Python 运行时</div></div>
+      <div class="stat"><div class="v" id="sDl">—</div><div class="k">模型下载</div></div>
+      <div class="stat"><div class="v" id="sLoad">—</div><div class="k">权重加载</div></div>
+    </div>
+    <div class="bar"><i id="bar"></i></div>
+    <div id="stage">等待开始</div>
+  </div>
+
+  <div class="card">
+    <h2>② 输入文字（英文模型）</h2>
+    <textarea id="txt">Hello! This voice is being generated right now, inside a normal web page, with no server at all.</textarea>
+    <div class="row">
+      <select id="voice"><option value="juno">Juno</option><option value="mira">Mira</option></select>
+      <button id="go" disabled>生成并播放</button>
+      <button class="ghost" id="init">加载模型</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>③ 本次结果</h2>
+    <div class="grid two">
+      <div class="stat big"><div class="v" id="rFirst">—</div><div class="k">首音延迟（点击 → 第一句可播）</div></div>
+      <div class="stat big"><div class="v" id="rRtf">—</div><div class="k">实时倍率（音频时长 ÷ 计算时间）</div></div>
+    </div>
+    <div class="grid" style="margin-top:10px">
+      <div class="stat"><div class="v" id="rAudio">—</div><div class="k">音频时长</div></div>
+      <div class="stat"><div class="v" id="rCompute">—</div><div class="k">总计算</div></div>
+      <div class="stat"><div class="v" id="rN">—</div><div class="k">分句数</div></div>
+    </div>
+    <canvas id="wave" width="1056" height="140"></canvas>
+    <div class="pieces" id="pieces"></div>
+  </div>
+
+  <div class="card">
+    <h2>④ 历史记录</h2>
+    <table><thead><tr><th>文本</th><th>字符</th><th>首音</th><th>音频</th><th>计算</th><th>倍率</th></tr></thead>
+      <tbody id="hist"></tbody></table>
+  </div>
+
+  <div class="note">模型：ConwayResearch/Underdog-Woof（两音色版，woof_int8.npz）。运行时：Pyodide 0.27 + numpy（WebAssembly，单线程 CPU）。
+    模型为 Underdog 非商业许可，仅用于测评。</div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const fmtMs = (ms) => ms < 1000 ? `${ms.toFixed(0)}<small>ms</small>` : `${(ms / 1000).toFixed(2)}<small>s</small>`;
+const worker = new Worker("worker.js");
+const TOTAL_BYTES = 41.3e6; // approx sum of the files fetched by worker.js
+let ctx, playHead = 0, run = null, runId = 0, readyAt = 0;
+window.__bench = { ready: null, runs: [], audio: [] };   // read by the recording script
+
+function setNet() {
+  $("pNet").textContent = navigator.onLine ? "网络：在线" : "网络：已断开";
+  $("pNet").className = "pill " + (navigator.onLine ? "" : "off");
+}
+addEventListener("online", setNet); addEventListener("offline", setNet);
+
+function countRequestsSinceReady() {
+  // resource timing entries created after the model finished loading = network traffic during inference
+  const n = performance.getEntriesByType("resource").filter((e) => e.startTime > readyAt).length;
+  $("pReq").textContent = `推理期网络请求：${n}`;
+  $("pReq").className = "pill " + (n === 0 ? "on" : "off");
+}
+
+function drawWave(pcm) {
+  const c = $("wave"), g = c.getContext("2d"), W = c.width, H = c.height;
+  g.clearRect(0, 0, W, H); g.fillStyle = "#ffb547";
+  const step = Math.max(1, Math.floor(pcm.length / W));
+  for (let x = 0; x < W; x++) {
+    let m = 0;
+    for (let j = x * step; j < (x + 1) * step && j < pcm.length; j++) m = Math.max(m, Math.abs(pcm[j]));
+    const h = Math.max(1, m * H * 0.95);
+    g.fillRect(x, (H - h) / 2, 1, h);
+  }
+}
+
+function play(pcm) {
+  ctx = ctx || new AudioContext({ sampleRate: 24000 });
+  const buf = ctx.createBuffer(1, pcm.length, 24000);
+  buf.copyToChannel(pcm, 0);
+  const src = ctx.createBufferSource(); src.buffer = buf; src.connect(ctx.destination);
+  const start = Math.max(ctx.currentTime + 0.02, playHead);
+  src.start(start); playHead = start + buf.duration;
+  // wall-clock (performance.now) time at which this chunk starts sounding, for muxing the screen recording
+  const at = performance.now() + (start - ctx.currentTime) * 1000;
+  window.__bench.audio.push({ at, pcm: Array.from(pcm) });
+}
+
+$("init").onclick = () => {
+  $("init").disabled = true;
+  worker.postMessage({ type: "init" });
+};
+$("go").onclick = () => {
+  ctx = ctx || new AudioContext({ sampleRate: 24000 });
+  ctx.resume();
+  const text = $("txt").value.trim();
+  if (!text) return;
+  run = { id: ++runId, text, t0: performance.now(), chunks: [], first: null };
+  $("go").disabled = true;
+  ["rFirst", "rRtf", "rAudio", "rCompute", "rN"].forEach((k) => $(k).innerHTML = "…");
+  $("pieces").innerHTML = "";
+  worker.postMessage({ type: "synth", id: run.id, text, voice: $("voice").value, seed: 0 });
+};
+
+worker.onmessage = (e) => {
+  const d = e.data;
+  if (d.type === "stage") $("stage").textContent = d.msg + "…";
+  else if (d.type === "bytes") {
+    $("bar").style.width = Math.min(100, d.got / TOTAL_BYTES * 100) + "%";
+    $("sDl").innerHTML = `${(d.got / 1e6).toFixed(1)}<small>MB</small>`;
+  } else if (d.type === "ready") {
+    readyAt = performance.now();
+    $("bar").style.width = "100%";
+    $("sBoot").innerHTML = fmtMs(d.tBoot);
+    $("sDl").innerHTML = `${(d.bytes / 1e6).toFixed(1)}<small>MB</small>`;
+    $("sDl").title = `${(d.tDl / 1000).toFixed(2)} s`;
+    $("sLoad").innerHTML = fmtMs(d.tLoad);
+    $("stage").textContent = `就绪：总冷启动 ${(d.total / 1000).toFixed(1)} s（下载 ${(d.tDl / 1000).toFixed(1)} s）。之后断网也能用。`;
+    $("go").disabled = false; $("init").textContent = "已加载";
+    window.__bench.ready = d;
+    countRequestsSinceReady();
+  } else if (d.type === "pieces") {
+    $("rN").textContent = d.pieces.length;
+    $("pieces").innerHTML = d.pieces.map((p, i) => `<div id="pc${i}"><b>…</b><span>${p.replace(/</g, "&lt;")}</span></div>`).join("");
+  } else if (d.type === "chunk") {
+    const pcm = new Float32Array(d.pcm);
+    if (run.first === null) { run.first = performance.now() - run.t0; $("rFirst").innerHTML = fmtMs(run.first); }
+    run.chunks.push({ computeMs: d.computeMs, audioSec: d.audioSec });
+    const el = $("pc" + d.i);
+    if (el) { el.className = "done"; el.querySelector("b").textContent = `${(d.computeMs / 1000).toFixed(2)}s → ${d.audioSec.toFixed(2)}s`; }
+    drawWave(pcm); play(pcm);
+  } else if (d.type === "done") {
+    const audio = run.chunks.reduce((a, c) => a + c.audioSec, 0);
+    const compute = run.chunks.reduce((a, c) => a + c.computeMs, 0);
+    const rtf = audio / (compute / 1000);
+    $("rAudio").innerHTML = `${audio.toFixed(2)}<small>s</small>`;
+    $("rCompute").innerHTML = fmtMs(compute);
+    $("rRtf").innerHTML = `${rtf.toFixed(2)}<small>×</small>`;
+    const r = { text: run.text, chars: run.text.length, firstMs: run.first, audioSec: audio, computeMs: compute, rtf, pieces: run.chunks.length, voice: $("voice").value };
+    window.__bench.runs.push(r);
+    $("hist").insertAdjacentHTML("afterbegin", `<tr><td>${run.text.slice(0, 14).replace(/</g, "&lt;")}…</td><td>${r.chars}</td><td>${(r.firstMs / 1000).toFixed(2)}s</td><td>${audio.toFixed(1)}s</td><td>${(compute / 1000).toFixed(1)}s</td><td>${rtf.toFixed(2)}×</td></tr>`);
+    $("go").disabled = false;
+    countRequestsSinceReady();
+  } else if (d.type === "error") {
+    $("stage").innerHTML = `<span class="err">出错：${d.msg}</span>`;
+    $("go").disabled = false;
+  }
+};
+setNet();
+if (new URLSearchParams(location.search).has("autoload")) $("init").click();
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+cold start {
+  type: 'ready',
+  tBoot: 153744.90000003576,
+  tDl: 29376.099999964237,
+  tLoad: 1417.6000000238419,
+  bytes: 41259980,
+  total: 184538.60000002384
+}
+juno short r0 first 6476ms audio 2.00s compute 6414ms x0.31
+juno medium r0 first 20799ms audio 6.76s compute 20790ms x0.33
+juno long r0 first 18448ms audio 16.56s compute 64585ms x0.26
+juno short r1 first 6217ms audio 2.00s compute 6213ms x0.32
+juno medium r1 first 20783ms audio 6.76s compute 20778ms x0.33
+juno long r1 first 18429ms audio 16.56s compute 64184ms x0.26
+mira short r0 first 35017ms audio 2.80s compute 34543ms x0.08
+mira medium r0 first 22863ms audio 7.44s compute 22858ms x0.33
+mira long r0 first 22246ms audio 19.36s compute 121138ms x0.16
+mira short r1 first 34696ms audio 2.80s compute 34693ms x0.08
+mira medium r1 first 22629ms audio 7.44s compute 22624ms x0.33
+mira long r1 first 21941ms audio 19.36s compute 121273ms x0.16
+推理期网络请求：0

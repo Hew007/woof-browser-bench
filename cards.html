@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>视频卡片</title>
+<style>
+  :root { --bg:#0d0f14; --panel:#161a22; --line:#262c38; --text:#e8ebf1; --muted:#8a93a6; --accent:#ffb547; --blue:#60a5fa; --good:#4ade80; --bad:#f87171; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 540px; height: 960px; background: var(--bg); color: var(--text); font-family: "Microsoft YaHei", "PingFang SC", sans-serif; overflow: hidden; }
+  .card { position: absolute; inset: 0; padding: 70px 34px; display: none; flex-direction: column; }
+  .card.on { display: flex; }
+  .kicker { color: var(--accent); font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+  h1 { font-size: 50px; line-height: 1.18; margin: 16px 0 18px; }
+  h1 em { font-style: normal; color: var(--accent); }
+  h2 { font-size: 30px; line-height: 1.25; margin: 6px 0 22px; }
+  p.lead { font-size: 21px; color: var(--muted); line-height: 1.6; }
+  .tags { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .tags span { border: 1px solid var(--line); border-radius: 99px; padding: 6px 14px; font-size: 17px; }
+  .big { margin-top: auto; font: 700 120px/1 Consolas, monospace; color: var(--accent); }
+  .big small { font-size: 36px; color: var(--muted); }
+  .legend { display: flex; gap: 18px; font-size: 16px; color: var(--muted); margin-bottom: 14px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .group { margin-bottom: 18px; }
+  .group .name { font-size: 17px; color: var(--muted); margin-bottom: 6px; }
+  .bar { display: flex; align-items: center; gap: 10px; height: 30px; margin-bottom: 5px; }
+  .bar i { display: block; height: 26px; border-radius: 0 5px 5px 0; min-width: 4px; }
+  .bar b { font: 700 19px Consolas, monospace; white-space: nowrap; }
+  .sec { font-size: 15px; color: var(--muted); margin: 6px 0 12px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .box .v { font: 700 34px/1.1 Consolas, monospace; }
+  .box .k { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  ol { padding-left: 0; list-style: none; counter-reset: n; }
+  ol li { counter-increment: n; font-size: 22px; line-height: 1.5; margin-bottom: 22px; padding-left: 44px; position: relative; }
+  ol li::before { content: counter(n); position: absolute; left: 0; top: 2px; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #1a1205; font: 700 18px/30px Consolas; text-align: center; }
+  ol li small { display: block; font-size: 16px; color: var(--muted); }
+  .foot { margin-top: auto; font-size: 15px; color: var(--muted); line-height: 1.6; }
+  .foot b { color: var(--text); font-weight: 400; }
+</style>
+</head>
+<body>
+<section class="card" id="title">
+  <div class="kicker">实测 · 端侧语音</div>
+  <h1>前端也能跑<br><em>语音 AI</em>？</h1>
+  <p class="lead">Underdog 刚开源的 Woof 文本转语音模型，<br>放进普通网页里，到底多快？</p>
+  <div class="tags"><span>不调云端 API</span><span>断网可用</span><span>无需安装</span></div>
+  <div class="big">31.7<small> MB</small></div>
+  <p class="lead" style="margin-top:10px">约 3070 万参数 · 比一张手机照片大不了多少</p>
+</section>
+
+<section class="card" id="compare">
+  <div class="kicker">同一台电脑 · 同样 3 句英文 · 断网</div>
+  <h2>首音延迟：点击 → 听到声音</h2>
+  <div class="legend"><span><i style="background:var(--good)"></i>官方 Demo（WebGPU）</span><span><i style="background:var(--bad)"></i>开源版（CPU / WASM）</span></div>
+  <div id="bars"></div>
+  <div class="row2" id="boxes"></div>
+  <div class="foot" id="machine"></div>
+</section>
+
+<section class="card" id="end">
+  <div class="kicker">结论</div>
+  <h2>能跑，但“怎么跑”决定体验</h2>
+  <ol id="points"></ol>
+  <div class="foot" id="repo"></div>
+</section>
+
+<script>
+function show(id) { document.querySelectorAll(".card").forEach((c) => c.classList.toggle("on", c.id === id)); }
+function fmt(ms) { return ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`; }
+function render(d) {
+  const names = { short: "短句 · 25 字符", medium: "中句 · 75 字符", long: "长段 · 3 句 226 字符" };
+  const max = Math.max(...d.rows.map((r) => r.local));
+  const scale = (v) => Math.max(4, v / max * 330);
+  document.getElementById("bars").innerHTML = d.rows.map((r) => `
+    <div class="group"><div class="name">${names[r.label]}</div>
+      <div class="bar"><i style="width:${scale(r.official)}px;background:var(--good)"></i><b>${fmt(r.official)}</b></div>
+      <div class="bar"><i style="width:${scale(r.local)}px;background:var(--bad)"></i><b>${fmt(r.local)}</b></div>
+    </div>`).join("");
+  document.getElementById("boxes").innerHTML = `
+    <div class="box"><div class="v" style="color:var(--good)">${d.officialSpeedup}</div><div class="k">官方版：播放连续无卡顿<br>生成快于播放</div></div>
+    <div class="box"><div class="v" style="color:var(--bad)">${d.localRtf}×</div><div class="k">开源 CPU 版实时倍率<br>（&lt;1 = 生成比播放慢）</div></div>`;
+  document.getElementById("machine").innerHTML = d.machine;
+  document.getElementById("points").innerHTML = d.points.map((p) => `<li>${p}</li>`).join("");
+  document.getElementById("repo").innerHTML = d.repo;
+}
+</script>
+</body>
+</html>

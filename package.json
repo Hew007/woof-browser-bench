@@ -1,0 +1,20 @@
+{
+  "name": "woof-browser-bench",
+  "version": "0.1.0",
+  "description": "Underdog Woof TTS 浏览器端实测：WebGPU 官方 Demo vs 开源 numpy 运行时（Pyodide/WASM）",
+  "scripts": {
+    "serve": "node serve.mjs 8787",
+    "bench": "node bench.mjs --rounds 2",
+    "official": "node measure_official.mjs --rounds 2",
+    "record": "node record.mjs all",
+    "video": "node make_video.mjs"
+  },
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "ffmpeg-static": "^5.2.0",
+    "playwright": "^1.48.2"
+  },
+  "private": true
+}

@@ -1,0 +1,164 @@
+{
+  "date": "2026-11-08T12:30:13.653Z",
+  "browser": "chrome 156.0.8078.49",
+  "machine": {
+    "cpu": "Intel(R) Core(TM) i7-10700T CPU @ 2.00GHz",
+    "cores": 16,
+    "os": "Windows_NT 10.0.26300"
+  },
+  "ready": {
+    "type": "ready",
+    "tBoot": 153744.90000003576,
+    "tDl": 29376.099999964237,
+    "tLoad": 1417.6000000238419,
+    "bytes": 41259980,
+    "total": 184538.60000002384
+  },
+  "netDuringInference": "推理期网络请求：0",
+  "results": [
+    {
+      "text": "Hi there, how can I help?",
+      "chars": 25,
+      "firstMs": 6475.700000047684,
+      "audioSec": 2,
+      "computeMs": 6414,
+      "rtf": 0.3118178983473652,
+      "pieces": 1,
+      "voice": "juno",
+      "label": "short",
+      "round": 0
+    },
+    {
+      "text": "Your order ships on March 3rd, and the total comes to $42.50 including tax.",
+      "chars": 75,
+      "firstMs": 20798.899999976158,
+      "audioSec": 6.76,
+      "computeMs": 20790.400000035763,
+      "rtf": 0.3251500692621773,
+      "pieces": 1,
+      "voice": "juno",
+      "label": "medium",
+      "round": 0
+    },
+    {
+      "text": "Welcome back! Today we are testing a tiny speech model that runs entirely inside the browser. There is no server, no API key, and no network call once the page has loaded. Let's see how fast it really is on an ordinary laptop.",
+      "chars": 226,
+      "firstMs": 18447.599999964237,
+      "audioSec": 16.560000000000002,
+      "computeMs": 64584.799999952316,
+      "rtf": 0.25640708030391407,
+      "pieces": 4,
+      "voice": "juno",
+      "label": "long",
+      "round": 0
+    },
+    {
+      "text": "Hi there, how can I help?",
+      "chars": 25,
+      "firstMs": 6216.699999988079,
+      "audioSec": 2,
+      "computeMs": 6213.299999952316,
+      "rtf": 0.3218901388980652,
+      "pieces": 1,
+      "voice": "juno",
+      "label": "short",
+      "round": 1
+    },
+    {
+      "text": "Your order ships on March 3rd, and the total comes to $42.50 including tax.",
+      "chars": 75,
+      "firstMs": 20783.399999976158,
+      "audioSec": 6.76,
+      "computeMs": 20778.399999976158,
+      "rtf": 0.32533785084548167,
+      "pieces": 1,
+      "voice": "juno",
+      "label": "medium",
+      "round": 1
+    },
+    {
+      "text": "Welcome back! Today we are testing a tiny speech model that runs entirely inside the browser. There is no server, no API key, and no network call once the page has loaded. Let's see how fast it really is on an ordinary laptop.",
+      "chars": 226,
+      "firstMs": 18428.799999952316,
+      "audioSec": 16.560000000000002,
+      "computeMs": 64183.5,
+      "rtf": 0.2580102362756784,
+      "pieces": 4,
+      "voice": "juno",
+      "label": "long",
+      "round": 1
+    },
+    {
+      "text": "Hi there, how can I help?",
+      "chars": 25,
+      "firstMs": 35017,
+      "audioSec": 2.8,
+      "computeMs": 34542.80000001192,
+      "rtf": 0.08105886031239602,
+      "pieces": 1,
+      "voice": "mira",
+      "label": "short",
+      "round": 0
+    },
+    {
+      "text": "Your order ships on March 3rd, and the total comes to $42.50 including tax.",
+      "chars": 75,
+      "firstMs": 22862.69999998808,
+      "audioSec": 7.44,
+      "computeMs": 22857.599999964237,
+      "rtf": 0.32549349013070666,
+      "pieces": 1,
+      "voice": "mira",
+      "label": "medium",
+      "round": 0
+    },
+    {
+      "text": "Welcome back! Today we are testing a tiny speech model that runs entirely inside the browser. There is no server, no API key, and no network call once the page has loaded. Let's see how fast it really is on an ordinary laptop.",
+      "chars": 226,
+      "firstMs": 22246.400000035763,
+      "audioSec": 19.36,
+      "computeMs": 121138.30000001192,
+      "rtf": 0.159817332751063,
+      "pieces": 4,
+      "voice": "mira",
+      "label": "long",
+      "round": 0
+    },
+    {
+      "text": "Hi there, how can I help?",
+      "chars": 25,
+      "firstMs": 34695.80000001192,
+      "audioSec": 2.8,
+      "computeMs": 34692.69999998808,
+      "rtf": 0.08070862169854066,
+      "pieces": 1,
+      "voice": "mira",
+      "label": "short",
+      "round": 1
+    },
+    {
+      "text": "Your order ships on March 3rd, and the total comes to $42.50 including tax.",
+      "chars": 75,
+      "firstMs": 22629,
+      "audioSec": 7.44,
+      "computeMs": 22624.399999976158,
+      "rtf": 0.3288484998500663,
+      "pieces": 1,
+      "voice": "mira",
+      "label": "medium",
+      "round": 1
+    },
+    {
+      "text": "Welcome back! Today we are testing a tiny speech model that runs entirely inside the browser. There is no server, no API key, and no network call once the page has loaded. Let's see how fast it really is on an ordinary laptop.",
+      "chars": 226,
+      "firstMs": 21940.69999998808,
+      "audioSec": 19.36,
+      "computeMs": 121273.39999997616,
+      "rtf": 0.15963929435477034,
+      "pieces": 4,
+      "voice": "mira",
+      "label": "long",
+      "round": 1
+    }
+  ]
+}
